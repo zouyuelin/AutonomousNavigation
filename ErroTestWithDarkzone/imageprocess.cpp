@@ -4,7 +4,7 @@ imgProcess::imgProcess(std::string videoPath,QObject *parent):cameraMatrix(cv::M
 {
     centerScreen = cv::Point2d(height/2,width/2);
 
-    //Ïà»úÄÚ²Î
+    //ç›¸æœºå†…å‚
     cameraMatrix.at<double>(0,0) = 399.23;
     cameraMatrix.at<double>(1,1) = 396.99;
     cameraMatrix.at<double>(0,2) = 301.175;
@@ -15,7 +15,7 @@ imgProcess::imgProcess(std::string videoPath,QObject *parent):cameraMatrix(cv::M
     distCoeffs.at<double>(0,1) = -0.1972;
     distCoeffs.at<double>(0,4) = 0.1358;
 
-    //Ïà»úÂ·¾¶
+    //ç›¸æœºè·¯å¾„
     videopath = videoPath;
     if(videopath.empty())
     {
@@ -29,7 +29,7 @@ imgProcess::imgProcess(std::string videoPath,QObject *parent):cameraMatrix(cv::M
     std::cout<<"The height is: "<<capture.get(cv::CAP_PROP_FRAME_HEIGHT)<<std::endl;
     capture.set(cv::CAP_PROP_POS_FRAMES,0.65);
 
-    //ÊÇ·ñ´ò¿ª³É¹¦
+    //æ˜¯å¦æ‰“å¼€æˆåŠŸ
     if (capture.isOpened())
         {
             qDebug()<<"open the file successful\n";
@@ -58,7 +58,7 @@ void imgProcess::AllStop()
 
 void imgProcess::run()
 {
-    //--------------´¦ÀíÊ¶±ğÍ¼ÏñÊı¾İ-----------------
+    //--------------å¤„ç†è¯†åˆ«å›¾åƒæ•°æ®-----------------
     std::cout<<"img process start\n";
     while(true)
     {
@@ -66,12 +66,12 @@ void imgProcess::run()
             {
                 cv::Mat frame;
                 cv::Mat frameRaw;
-                //¼ÆÊ±
+                //è®¡æ—¶
                 cv::TickMeter meter;
                 meter.start();
                 capture>>frame;
 
-                //ÍË³öÌõ¼ş
+                //é€€å‡ºæ¡ä»¶
                 if (frame.empty())
                 {
                     capture.release();
@@ -90,7 +90,7 @@ void imgProcess::run()
 
 void imgProcess::selectCentre(cv::Mat &frame,cv::Mat &raw)
 {
-    //Çå³ıÒ»±é
+    //æ¸…é™¤ä¸€é
     centers.clear();
     Goodcontours.clear();
     contours.clear();
@@ -98,7 +98,7 @@ void imgProcess::selectCentre(cv::Mat &frame,cv::Mat &raw)
     findContours(frame,contours,cv::noArray(),cv::RETR_CCOMP,cv::CHAIN_APPROX_SIMPLE);
     //cvtColor(raw,raw,cv::COLOR_GRAY2BGR);
 
-    //»­ÂÖÀª
+    //ç”»è½®å»“
     for(int i=0;i<contours.size();i++)
     {
         double area;
@@ -114,7 +114,7 @@ void imgProcess::selectCentre(cv::Mat &frame,cv::Mat &raw)
 
     for(int i=0;i<Goodcontours.size();i++)
     {
-        //¼ÆËãÖÊĞÄ
+        //è®¡ç®—è´¨å¿ƒ
         cv::Moments mom;
         cv::Point2d center;
         mom = moments(Goodcontours[i]);
@@ -130,15 +130,15 @@ void imgProcess::selectCentre(cv::Mat &frame,cv::Mat &raw)
                  3);
     }
     cv::circle(raw,centerScreen,2,cv::Scalar(0,255,0),2);
-    //»­ÂÖÀª,¿ÉÒÔÊ¹ÓÃfor autoµü´úÆ÷
-    //for(auto a:b)ÖĞbÎªÒ»¸öÈİÆ÷£¬Ğ§¹ûÊÇÀûÓÃa±éÀú²¢»ñµÃbÈİÆ÷ÖĞµÄÃ¿Ò»¸öÖµ£¬µ«ÊÇaÎŞ·¨Ó°Ïìµ½bÈİÆ÷ÖĞµÄÔªËØ
-    //for(auto &a:b)ÖĞ¼ÓÁËÒıÓÃ·ûºÅ£¬¿ÉÒÔ¶ÔÈİÆ÷ÖĞµÄÄÚÈİ½øĞĞ¸³Öµ£¬¼´¿ÉÍ¨¹ı¶Ôa¸³ÖµÀ´×öµ½ÈİÆ÷bµÄÄÚÈİÌî³ä
-    caclDistanceAndTheta(centers,frame);
+    //ç”»è½®å»“,å¯ä»¥ä½¿ç”¨for autoè¿­ä»£å™¨
+    //for(auto a:b)ä¸­bä¸ºä¸€ä¸ªå®¹å™¨ï¼Œæ•ˆæœæ˜¯åˆ©ç”¨aéå†å¹¶è·å¾—bå®¹å™¨ä¸­çš„æ¯ä¸€ä¸ªå€¼ï¼Œä½†æ˜¯aæ— æ³•å½±å“åˆ°bå®¹å™¨ä¸­çš„å…ƒç´ 
+    //for(auto &a:b)ä¸­åŠ äº†å¼•ç”¨ç¬¦å·ï¼Œå¯ä»¥å¯¹å®¹å™¨ä¸­çš„å†…å®¹è¿›è¡Œèµ‹å€¼ï¼Œå³å¯é€šè¿‡å¯¹aèµ‹å€¼æ¥åšåˆ°å®¹å™¨bçš„å†…å®¹å¡«å……
+    caclDistanceAndTheta(centers,raw);
 }
 
 cv::Mat imgProcess::PreProcess(cv::Mat frame,cv::Mat &raw)
 {
-    //²Ã¼ô
+    //è£å‰ª
     cv::Rect rect(frame.cols/2-355,frame.rows/2-355,750,750);
     frame=frame(rect);
 
@@ -150,15 +150,15 @@ cv::Mat imgProcess::PreProcess(cv::Mat frame,cv::Mat &raw)
 
     //cv::resize(frame,frame,cv::Size(width,height));
 
-    //repat the image-Ïû³ı»û±ä-
+    //repat the image-æ¶ˆé™¤ç•¸å˜-
     cv::Mat frameRepat;
     undistort(frame ,frameRepat ,cameraMatrix,distCoeffs);
     raw = frameRepat.clone();
 
-    //ÂË²¨
+    //æ»¤æ³¢
     GaussianBlur(frameRepat,frameRepat,cv::Size(5,5),0,0);
 
-    //»Ò¶È´¦Àí
+    //ç°åº¦å¤„ç†
     cv::cuda::GpuMat Mat2(frameRepat);
     cv::cuda::GpuMat gpu_frame_2;
     cv::cuda::cvtColor(Mat2,gpu_frame,cv::COLOR_BGR2GRAY);
@@ -166,7 +166,7 @@ cv::Mat imgProcess::PreProcess(cv::Mat frame,cv::Mat &raw)
 
     //cvtColor(frameRepat,frameRepat,cv::COLOR_BGR2GRAY);
 
-    //´ó½òËã·¨
+    //å¤§æ´¥ç®—æ³•
     threshold(frameRepat,frameRepat,110,255,cv::THRESH_OTSU);//cv::THRESH_BINARY_INV
 
     return frameRepat;
@@ -213,9 +213,9 @@ inline void imgProcess::caclDistanceAndTheta(std::vector<cv::Point2d> Centre,cv:
             cv::line(frame,iter,centerScreen,cv::Scalar(255,255,0),2);
         }
 
-        //·¢ËÍÆ«×ª½Ç¶È£¬ÒÑ¾­Ó³Éä0~360¡ãµ½0~1£»
+        //å‘é€åè½¬è§’åº¦ï¼Œå·²ç»æ˜ å°„0~360Â°åˆ°0~1ï¼›
         messageSend[0] = theta[elemet];
-        //·¢ËÍ¿×ÖĞĞÄ¾àÊÓ¾õÖĞĞÄ¾àÀë£¬ÒÑ¾­Ó³Éä0~530.3ÏñËØÖµµ½0~1£»
+        //å‘é€å­”ä¸­å¿ƒè·è§†è§‰ä¸­å¿ƒè·ç¦»ï¼Œå·²ç»æ˜ å°„0~530.3åƒç´ å€¼åˆ°0~1ï¼›
         messageSend[1] = distance[elemet];
     }
 }
