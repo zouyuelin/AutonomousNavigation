@@ -4,13 +4,13 @@ int SSD_Detect::addIndex = 0;
 int SSD_Detect::index = 0;
 
 SSD_Detect::SSD_Detect(dnn::Net getnet,VideoCapture getcapture,bool isdetect,bool isGetRect )
-    :net(getnet),capture(getcapture),autoControl(false),quitTheThread(true),theHolesNumber(0)       //×Ó¶ÔÏó³õÊ¼»¯
+    :net(getnet),capture(getcapture),autoControl(false),quitTheThread(true),theHolesNumber(0)       //å­å¯¹è±¡åˆå§‹åŒ–
 {
     startdetect = isdetect;
     if(isdetect)
     {
         qDebug()<<"The thread of object-detect has been constructed!"<<endl;
-    //--------------ÉèÖÃÏà¹ØÊÓÆµ²ÎÊı-----------------
+    //--------------è®¾ç½®ç›¸å…³è§†é¢‘å‚æ•°-----------------
         //double rate=capture.get(CAP_PROP_FPS);
         int position=0;
         //long totalFrameNumber = capture.get(CAP_PROP_FRAME_COUNT);
@@ -29,21 +29,21 @@ SSD_Detect::SSD_Detect(dnn::Net getnet,VideoCapture getcapture,bool isdetect,boo
 
 SSD_Detect::~SSD_Detect()
 {
-    //¹Ø±ÕÏß³Ìº¯Êı
+    //å…³é—­çº¿ç¨‹å‡½æ•°
     this->requestInterruption();
     this->quit();
     this->wait();
-    //É¾³ıpmacÖ¸Õë£¬ÊÍ·ÅÄÚ´æ
+    //åˆ é™¤pmacæŒ‡é’ˆï¼Œé‡Šæ”¾å†…å­˜
     delete pmac;
 }
 void SSD_Detect::run()
 {
-    //µÃµ½Ä¿±êÎ»ÖÃ
+    //å¾—åˆ°ç›®æ ‡ä½ç½®
     while(_isGetRect && quitTheThread)
     {
         //objectPosition();
     }
-    //Ä¿±ê¼ì²â
+    //ç›®æ ‡æ£€æµ‹
     if(startdetect)
     {
         qDebug()<<"detect runing"<<endl;
@@ -55,7 +55,7 @@ void SSD_Detect::run()
         QObject::connect(pmac,SIGNAL(connectedReady(bool)),this,SLOT(sendConnectReady(bool)));
         pmac->connet();
 
-        //Æô¶¯³ÌĞò´úºÅ3
+        //å¯åŠ¨ç¨‹åºä»£å·3
         pmac->telSendMess(QString("&1B3R"),pmac->sock2);
 
         emit setPmac();
@@ -72,7 +72,7 @@ void SSD_Detect::sendConnectReady(bool io)
 void SSD_Detect::pmacsendmassage()
 {
 
-    //¿ªÊ¼·¢ËÍÏûÏ¢
+    //å¼€å§‹å‘é€æ¶ˆæ¯
     while(quitTheThread)
     {
             while(command[0]!=0 && autoControl)
@@ -80,10 +80,10 @@ void SSD_Detect::pmacsendmassage()
                 double temp[2];
                 for(int i=0;i<2;i++)
                 temp[i]=command[i];
-                QString temp_cmd[3]={"p8288=","p8289=","p8287="};  //¸³ÖµÓï¾äĞèÒªÒ»ÌõÖ¸ÁîÖÜÆÚ
-                //p1000±íÊ¾Ğı×ª£¬p1500±íÊ¾ÍäÇú£¬p2000±íÊ¾½ø¸ø£¬p2500±íÊ¾Ğı×ª½ÇÏóÏŞ
+                QString temp_cmd[3]={"p8288=","p8289=","p8287="};  //èµ‹å€¼è¯­å¥éœ€è¦ä¸€æ¡æŒ‡ä»¤å‘¨æœŸ
+                //p1000è¡¨ç¤ºæ—‹è½¬ï¼Œp1500è¡¨ç¤ºå¼¯æ›²ï¼Œp2000è¡¨ç¤ºè¿›ç»™ï¼Œp2500è¡¨ç¤ºæ—‹è½¬è§’è±¡é™
 
-                //ÏÂÎ»»ú¸ù¾İÏóÏŞ·¢ËÍĞÅÏ¢
+                //ä¸‹ä½æœºæ ¹æ®è±¡é™å‘é€ä¿¡æ¯
                 if (0<=temp[0] && temp[0]<0.25) {
                     temp_cmd[2] += QString::number(1);
                 }
@@ -98,7 +98,7 @@ void SSD_Detect::pmacsendmassage()
                 }
 
                 for(int i=0;i<2;i++)
-                    temp_cmd[i] += QString::number(temp[i]);//ÔÚ¼«¶ÌµÄÖ¸ÁîÖÜÆÚÄÚ¸³Öµ¸øtemp_cmd
+                    temp_cmd[i] += QString::number(temp[i]);//åœ¨æçŸ­çš„æŒ‡ä»¤å‘¨æœŸå†…èµ‹å€¼ç»™temp_cmd
 
                 pmac->telSendMess(temp_cmd[0],pmac->sock2);
                 usleep(5);
@@ -117,7 +117,7 @@ void SSD_Detect::pmacsendmassage()
 void SSD_Detect::Detect()
 {
 
-    // Ïà»úÄÚ²Î
+    // ç›¸æœºå†…å‚
     Mat cameraMatrix = Mat::zeros(3,3,CV_64F);
     cameraMatrix.at<double>(0,0) = 399.23;
     cameraMatrix.at<double>(1,1) = 396.99;
@@ -125,13 +125,13 @@ void SSD_Detect::Detect()
     cameraMatrix.at<double>(1,2) = 306.12;
     cameraMatrix.at<double>(2,2) = 1.00;
 
-    Mat distCoeffs = Mat::zeros(5,1,CV_64F);
+    Mat distCoeffs = Mat::zeros(1,5,CV_64F);
     distCoeffs.at<double>(0,0) = -0.0876;
     distCoeffs.at<double>(0,1) = -0.1972;
     distCoeffs.at<double>(0,4) = 0.1358;
 
         emit setOpenFrameReady();
-        //--------------´¦ÀíÊ¶±ğÍ¼ÏñÊı¾İ-----------------
+        //--------------å¤„ç†è¯†åˆ«å›¾åƒæ•°æ®-----------------
         while(capture.isOpened() && quitTheThread)
         {
             cv::TickMeter meter;
@@ -145,13 +145,13 @@ void SSD_Detect::Detect()
 
             Rect rect(width/2-355,height/2-355,750,750);
             frame=frame(rect);
-            //----------------resize GPU¼ÓËÙ´¦Àí-------------------
+            //----------------resize GPUåŠ é€Ÿå¤„ç†-------------------
                     cuda::GpuMat Mat1(frame);
                     cuda::GpuMat gpu_frame;
                     cuda::resize(Mat1,gpu_frame,Size(frame.rows*0.8,frame.cols*0.8));
                     gpu_frame.download(frame);
 
-            //----------------resize GPU¼ÓËÙÍê³É-------------------
+            //----------------resize GPUåŠ é€Ÿå®Œæˆ-------------------
             vector<Point2f> center;
             objectPosition(center);
             setBottle(center,frame);//set big vector
@@ -160,11 +160,11 @@ void SSD_Detect::Detect()
             center.clear();
             meter.stop();
 
-            //repat the image-------------------Ïû³ı»û±ä-----------------------
+            //repat the image-------------------æ¶ˆé™¤ç•¸å˜-----------------------
             Mat output;
             undistort(frame ,output ,cameraMatrix,distCoeffs);
             frame = output.clone();
-            //repat the image-------------------Ïû³ı»û±ä½áÊø-----------------
+            //repat the image-------------------æ¶ˆé™¤ç•¸å˜ç»“æŸ-----------------
 
             putText(frame, format("FPS: %.2f ; time: %.2f ms; number: %d ", 1000.f / meter.getTimeMilli(), meter.getTimeMilli(),theHolesNumber),Point(10, 20), 0, 0.5, Scalar(0, 0, 255),1);
 
@@ -184,7 +184,7 @@ void inline SSD_Detect::objectPosition(vector<Point2f> &center_p)
 
     Mat detectionMat(output.size[2], output.size[3], CV_32F, output.ptr<float>());
 
-//-------------------ÏÔÊ¾Ö¡ÊıfpsºÍÑÓ³Ùms----------------------
+//-------------------æ˜¾ç¤ºå¸§æ•°fpså’Œå»¶è¿Ÿms----------------------
 //    vector<double> layersTimings;
 //    double tick_freq = getTickFrequency();
 //    double time_ms = net.getPerfProfile(layersTimings) / tick_freq * 1000;
@@ -192,7 +192,7 @@ void inline SSD_Detect::objectPosition(vector<Point2f> &center_p)
 //            Point(10, 20), 0, 0.5, Scalar(0, 0, 255),1);
 
 
-//------------------Ñ­»·±éÀúÏÔÊ¾¼ì²â¿ò--------------------------
+//------------------å¾ªç¯éå†æ˜¾ç¤ºæ£€æµ‹æ¡†--------------------------
     for (int i = 0; i < detectionMat.rows; i++)
         {
             float confidence = detectionMat.at<float>(i, 2);
@@ -222,7 +222,7 @@ void inline SSD_Detect::objectPosition(vector<Point2f> &center_p)
                  //circle(frame,Point(frame.cols/2,frame.rows/2),3,Scalar(0,255,255),2);
                  center_p.push_back(center_C);
 
-                //ÏÔÊ¾¼ì²â¿ò
+                //æ˜¾ç¤ºæ£€æµ‹æ¡†
                 /*Rect object((int)xLeftBottom, (int)yLeftBottom,
                     (int)(xRightTop - xLeftBottom),
                     (int)(yRightTop - yLeftBottom));
@@ -348,7 +348,7 @@ void inline SSD_Detect::getConfidenceCentre(vector< vector<Point2f> > tens,Mat &
     //calculate the distance and the theta
     caclDistanceandTheta(theTempCentre,frame,index);
     theHolesNumber = theTempCentre.size();
-    addIndex = 0;//¸´Î»
+    addIndex = 0;//å¤ä½
 }
 
 //the distance of the points
@@ -417,9 +417,9 @@ void inline  SSD_Detect::caclDistanceandTheta(vector<Point2f> theLastCentre,Mat 
         if(theLastCentre.size()>0)
             line(frame,theLastCentre[elemet],Point(frame.cols/2,frame.rows/2),Scalar(255,200,0));
 
-        //·¢ËÍÆ«×ª½Ç¶È£¬ÒÑ¾­Ó³Éä0~360¡ãµ½0~1£»
+        //å‘é€åè½¬è§’åº¦ï¼Œå·²ç»æ˜ å°„0~360Â°åˆ°0~1ï¼›
         command[0] = theta[elemet];
-        //·¢ËÍ¿×ÖĞĞÄ¾àÊÓ¾õÖĞĞÄ¾àÀë£¬ÒÑ¾­Ó³Éä0~530.3ÏñËØÖµµ½0~1£»
+        //å‘é€å­”ä¸­å¿ƒè·è§†è§‰ä¸­å¿ƒè·ç¦»ï¼Œå·²ç»æ˜ å°„0~530.3åƒç´ å€¼åˆ°0~1ï¼›
         command[1] = distance[elemet];
     }
 }
