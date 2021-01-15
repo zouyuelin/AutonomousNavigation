@@ -45,5 +45,8 @@ int main()
 
     imgthread->wait();
     powerpmac->wait();
+    
+    delete imgthread;
+    delete powerpmac;
     return 0;
 }
