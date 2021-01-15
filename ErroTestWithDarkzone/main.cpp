@@ -1,6 +1,6 @@
 /*设计思路：
  * 1.设计父进程为imgthread，子进程为powerpmac，
- *   a.1在接收进程构造函数中，this->moveToThread(this)或(QApplication::instance()->thread())
+ *   a.1在接收进程构造函数中，this->moveToThread(singal)或发射进程中 singal->moveToThread(this)
  *   a.2或者在父进程的构造函数中实现connect(this,&A::signal,other,&B::slot)和other->start
  *   a.3传递自定义参数时，可以用qRegisterMetaType<Mat>("Mat")的形式注册
  *   a.4利用Object实现的多线程，需要使用moveToThread函数将它放到线程中，例如：
@@ -30,7 +30,7 @@ int main()
 
     imgProcess *imgthread = new imgProcess(path);
     pmac *powerpmac = new pmac;
-    //powerpmac->moveToThread(QApplication::instance()->thread());
+    //powerpmac->moveToThread(imgthread);
 
     QObject::connect(imgthread,
                             &imgProcess::SendThePosMessage,
