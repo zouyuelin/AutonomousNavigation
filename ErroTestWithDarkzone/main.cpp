@@ -27,6 +27,7 @@ int main()
 {
     qRegisterMetaType<cv::Mat>("cv::Mat");
     string path = "20210108193519.mp4";
+    string camera = "";
 
     imgProcess *imgthread = new imgProcess(path);
     pmac *powerpmac = new pmac;
